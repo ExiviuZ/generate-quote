@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@300;600&family=Bangers&display=swap"
+      rel="stylesheet"
+    />
+    <title>Document</title>
+    <style>
+      *,
+      *::after,
+      *::before {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      :root {
+        --ff-header: "Bangers", cursive;
+        --ff-quotes: "Anek Latin", sans-serif;
+      }
+      body {
+        font-family: var(--ff-quotes);
+        padding: 2rem;
+        background-color: hsl(34, 78%, 91%);
+      }
+      h1 {
+        text-align: center;
+        position: relative;
+        margin-inline: auto;
+        margin-bottom: 1rem;
+      }
+
+      .all-quotes {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 1rem;
+      }
+      .author {
+        background-color: hsla(34, 78%, 71%, 0.7);
+        animation: appear 0.75s ease-in-out forwards;
+        font-size: 1.3rem;
+        border-radius: 5px;
+        list-style-type: none;
+        font-weight: 600;
+        box-shadow: 0px 0px 5px 0px hsla(0, 4%, 50%, 0.2);
+        padding: 1rem;
+      }
+      .author:hover {
+        transform: scale(1.5);
+      }
+
+      .author .authorQuote {
+        font-size: 1rem;
+        font-weight: 300;
+      }
+      .authorChildWrapper {
+        padding: 1rem;
+      }
+
+      .form-control {
+        width: max-content;
+        margin: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: center;
+      }
+      .form-control input {
+        padding: 0.5rem;
+        font-family: inherit;
+        border-radius: 20px;
+        border: 2px solid black;
+      }
+
+      @media screen and (max-width: 500px) {
+        .all-quotes {
+          grid-template-columns: 1fr;
+        }
+      }
+      @keyframes appear {
+        from {
+          visibility: hidden;
+          opacity: 0;
+          transform: scale(0);
+        }
+        to {
+          visibility: visible;
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+      @keyframes disappear {
+        from {
+          opacity: 1;
+        }
+        to {
+          opacity: 0;
+          display: none;
+          position: absolute;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Random Author's Quotes</h1>
+    <form action="#">
+      <div class="form-control">
+        <label for="number">Tell me how many quotes you want.</label>
+        <input type="number" for="number" placeholder="1000 quotes??" />
+      </div>
+    </form>
+    <ul class="all-quotes"></ul>
+    <script>
+      async function generateQuote(numberOfTimes) {
+        for (let i = 0; i < numberOfTimes; i++) {
+          await fetch("https://api.quotable.io/random").then((res) => {
+            return res.json().then((quote) => {
+              appenendToDom(quote, i + 1);
+            });
+          });
+        }
+      }
+
+      function appenendToDom(quoteObject, number) {
+        const author = document.createElement("li");
+        author.classList.add("author");
+        const authorChildWrapper = document.createElement("ul");
+        authorChildWrapper.classList.add("authorChildWrapper");
+        const authorQuote = document.createElement("li");
+        authorQuote.classList.add("authorQuote");
+
+        author.innerText = `${number}. ${quoteObject.author}`;
+        authorQuote.innerText = `"${quoteObject.content}"`;
+
+        authorChildWrapper.appendChild(authorQuote);
+
+        author.appendChild(authorChildWrapper);
+
+        const quotesContainer = document.querySelector(".all-quotes");
+        quotesContainer.appendChild(author);
+      }
+
+      const form = document.querySelector("form");
+      const input = document.querySelector("input");
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        let xToGenerate = input.value;
+        console.log(xToGenerate);
+        form.style.animation = "disappear ease-in-out 1s forwards";
+        generateQuote(xToGenerate);
+      });
+    </script>
+  </body>
+</html>
